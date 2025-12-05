@@ -14,17 +14,6 @@ class TimeSolvAPIError(Exception):
     '''Custom exception for TimeSolv API errors.'''
     pass
 
-class TimeSolvAuth:
-    '''Handles authentication for TimeSolv API.'''
-
-    def __init__(self, api_key: str):
-        pass
-    
-    # POST
-    def get_access_token(self):
-        '''Authenticate and return an access token.'''
-        pass
-
 class TimeSolvAPI:
     '''Client for TimeSolv API.'''
 
@@ -39,8 +28,7 @@ class TimeSolvAPI:
     # Helper
     def _get_access_token(self, config_data: Dict) -> str:
         '''Retrieve access token for initialization.'''
-        # Normalize keys to lowercase
-        config_data_lower = {k.lower(): v for k, v in config_data.items()}
+        config_data_lower = {k.lower(): v for k, v in config_data.items()}          # Normalize keys to lowercase
 
         if config_data_lower.get('client_id') and config_data_lower.get('client_secret') and config_data_lower.get('code') and config_data_lower.get('redirect_uri'):
             access_data = {
@@ -51,14 +39,8 @@ class TimeSolvAPI:
                 'redirect_uri': config_data_lower['redirect_uri']
             }
 
-            # TODO: Call _request helper instead
             token_data = self._request('POST', 'Token', payload=access_data)
             return token_data['access_token']
-            
-            # token_data = response.json()
-
-            # if token_data.get("error"):
-            #     raise TimeSolvAPIError(f"Error obtaining access token: {token_data['error_description']}")
 
         raise TimeSolvAPIError("Missing required authentication parameters.")
     
@@ -78,13 +60,106 @@ class TimeSolvAPI:
         except ValueError as e:
             raise TimeSolvAPIError(f"Error parsing JSON response from {full_url}: {e}")
     
-    # POST
     def get_firm_users(self) -> List[Dict]:
-        '''Retrieve a list of firm users.'''
-        pass
-    
-    # POST
-    def get_timecards(self) -> List[Dict]:
-        '''Retrieve a list of timecards.'''
-        pass
+        """
+        Retrieve a list of firm users.
 
+        Returns:
+        - List[Dict]: A list of firm users.
+        """
+        firm_users = []
+        endpoint = 'firmUserSearch'
+        page_size = 100
+        page_number = 1
+
+        while True:
+            payload = {
+                "OrderBy": "Id",
+                "SortOrderAscending": 0,
+                "PageSize": page_size,
+                "PageNumber": page_number,
+                "Criteria": [
+                    {
+                        "FieldName": "UserStatus",
+                        "Operator": "=",
+                        "Value": "Active"
+                    }
+                ]
+            }
+
+            response_data = self._request('POST', endpoint, payload=payload)
+
+            # Extract user information
+            users = response_data.get("FirmUsers", [])
+            if not users:
+                break
+
+            # Append users to firm list
+            firm_list.extend(users)
+
+            if len(users) < page_size:
+                break
+            
+            page_number += 1
+
+        return firm_users
+    
+    def get_timecards(self, firm_user_id: int, start_date: str, end_date: str) -> List[Dict]:
+        """
+        Search for timecards within the specified date range.
+
+        Args:
+        - firm_user_id (int): The ID of the firm user whose timecards are to be searched.
+        - start_date (str): The start date for the search (YYYY-MM-DD).
+        - end_date (str): The end date for the search (YYYY-MM-DD).
+
+        Returns:
+        - A list of dictionaries containing timecard details.
+        """
+
+        user_timecards = []
+        endpoint = 'timecardSearch'
+        page_size = 100
+        page_number = 1
+
+        while True:
+            payload = {
+                "Criteria": [
+                    {
+                        "FieldName": "FirmUserId",
+                        "Operator": "=",
+                        "Value": firm_user_id
+                    },
+                    {
+                        "FieldName": "Date",
+                        "Operator": ">=",
+                        "Value": start_date
+                    },
+                    {
+                        "FieldName": "Date",
+                        "Operator": "<=",
+                        "Value": end_date
+                    }
+                ],
+                "OrderBy": "Date",
+                "SortOrderAscending": 1,
+                "PageSize": page_size,
+                "PageNumber": page_number
+            }
+
+            response_data = self._request('POST', endpoint, payload=payload)
+
+            # Extract timecard information
+            timecards = response_data.get("TimeCards", [])
+            if not timecards:
+                break
+
+            # Append timecards to list
+            user_timecards.extend(timecards)
+
+            if len(timecards) < page_size:
+                break
+            
+            page_number += 1
+
+        return user_timecards
