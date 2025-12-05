@@ -30,12 +30,12 @@ class TimeSolvAPI:
         '''Retrieve access token for initialization.'''
         config_data_lower = {k.lower(): v for k, v in config_data.items()}          # Normalize keys to lowercase
 
-        if config_data_lower.get('client_id') and config_data_lower.get('client_secret') and config_data_lower.get('code') and config_data_lower.get('redirect_uri'):
+        if config_data_lower.get('client_id') and config_data_lower.get('client_secret') and config_data_lower.get('auth_code') and config_data_lower.get('redirect_uri'):
             access_data = {
                 'client_id': config_data_lower['client_id'],
                 'client_secret': config_data_lower['client_secret'],
                 'grant_type': 'authorization_code',
-                'code': config_data_lower['code'],
+                'code': config_data_lower['auth_code'],
                 'redirect_uri': config_data_lower['redirect_uri']
             }
 
