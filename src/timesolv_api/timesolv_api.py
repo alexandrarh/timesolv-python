@@ -184,9 +184,25 @@ class TimeSolvAPI:
                 "PageNumber": page_number,
                 "Criteria": [
                     {
-                    "FieldName": "",
-                    "Operator": "",
-                    "Value": ""
+                    "FieldName": "isActive",
+                    "Operator": "=",
+                    "Value": 1
                     }
                 ]
             }
+
+            response_data = self._request('POST', endpoint, payload=payload)
+
+            taskcode = response_data.get("TaskCodes", [])
+            if not taskcode:
+                break
+
+            # Append task codes to list
+            task_codes.extend(taskcode)
+
+            if len(taskcode) < page_size:
+                break
+            
+            page_number += 1
+
+        return task_codes
