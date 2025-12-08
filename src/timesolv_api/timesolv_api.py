@@ -75,7 +75,7 @@ class TimeSolvAPI:
         while True:
             payload = {
                 "OrderBy": "Id",
-                "SortOrderAscending": 0,
+                "SortOrderAscending": false,
                 "PageSize": page_size,
                 "PageNumber": page_number,
                 "Criteria": [
@@ -142,7 +142,7 @@ class TimeSolvAPI:
                     }
                 ],
                 "OrderBy": "Date",
-                "SortOrderAscending": 1,
+                "SortOrderAscending": true,
                 "PageSize": page_size,
                 "PageNumber": page_number
             }
@@ -163,3 +163,30 @@ class TimeSolvAPI:
             page_number += 1
 
         return user_timecards
+
+    def get_taskcodes(self) -> List[Dict]:
+        """
+        Retrieve a list of task codes.
+
+        Returns:
+        - List[Dict]: A list of task codes.
+        """
+        task_codes = []
+        endpoint = 'taskcodeSearch'
+        page_size = 100
+        page_number = 1
+
+        while True:
+            payload = {
+                "OrderBy": "Id",
+                "SortOrderAscending": false,
+                "PageSize": page_size,
+                "PageNumber": page_number,
+                "Criteria": [
+                    {
+                    "FieldName": "",
+                    "Operator": "",
+                    "Value": ""
+                    }
+                ]
+            }
