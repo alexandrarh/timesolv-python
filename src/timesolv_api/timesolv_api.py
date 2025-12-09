@@ -39,18 +39,22 @@ class TimeSolvAPI:
                 'redirect_uri': config_data_lower['redirect_uri']
             }
 
-            token_data = self._request('POST', 'Token', payload=access_data)
+            token_data = self._request('POST', 'Token', data=access_data)
             return token_data['access_token']
 
         raise TimeSolvAPIError("Missing required authentication parameters.")
     
-    # Helper
-    def _request(self, method: str, endpoint: str, payload: Optional[Dict]=None, **kwargs) -> List[Dict]:
+    # Helper -> check if need List[Dict] at all
+    def _request(self, method: str, endpoint: str, **kwargs) -> List[Dict]:
         '''Make a request to the TimeSolv API.'''
         full_url = urljoin(self.base_url, endpoint)
 
+        headers = kwargs['headers'] if 'headers' in kwargs else None 
+        data = kwargs['data'] if 'data' in kwargs else None
+        json = kwargs['json'] if 'json' in kwargs else None
+        
         try:
-            response = requests.request(method, full_url, headers=self.headers, json=payload, **kwargs)       # Add timeout parameter if needed; also unsure of kwargs
+            response = requests.request(method, full_url, headers=headers, json=json, data=data)       # Add timeout parameter if needed; also unsure of kwargs
             response.raise_for_status()
             return response.json()
         except requests.HTTPError as e:
@@ -87,7 +91,7 @@ class TimeSolvAPI:
                 ]
             }
 
-            response_data = self._request('POST', endpoint, payload=payload)
+            response_data = self._request('POST', endpoint, headers=self.headers, json=payload)
 
             # Extract user information
             users = response_data.get("FirmUsers", [])
@@ -147,7 +151,7 @@ class TimeSolvAPI:
                 "PageNumber": page_number
             }
 
-            response_data = self._request('POST', endpoint, payload=payload)
+            response_data = self._request('POST', endpoint, headers=self.headers, json=payload)
 
             # Extract timecard information
             timecards = response_data.get("TimeCards", [])
@@ -191,7 +195,7 @@ class TimeSolvAPI:
                 ]
             }
 
-            response_data = self._request('POST', endpoint, payload=payload)
+            response_data = self._request('POST', endpoint, headers=self.headers, json=payload)
 
             taskcode = response_data.get("TaskCodes", [])
             if not taskcode:
@@ -206,3 +210,5 @@ class TimeSolvAPI:
             page_number += 1
 
         return task_codes
+
+    
