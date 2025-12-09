@@ -211,4 +211,90 @@ class TimeSolvAPI:
 
         return task_codes
 
+    def get_abbreviations(self) -> List[Dict]:
+        """
+        Retrieve a list of abbreviations.
+
+        Returns:
+        - List[Dict]: A list of abbreviations.
+        """
+        abbreviations = []
+        endpoint = 'abbreviationSearch'
+        page_size = 100
+        page_number = 1
+
+        while True:
+            payload = {
+                "OrderBy": "Id",
+                "SortOrderAscending": False,
+                "PageSize": page_size,
+                "PageNumber": page_number,
+                "Criteria": [
+                    {
+                        "FieldName": "IsActive",
+                        "Operator": "=",
+                        "Value": 1
+                    }
+                ]
+            }
+
+            response_data = self._request('POST', endpoint, headers=self.headers, json=payload)
+
+            abbreviations_page = response_data.get("Abbreviations", [])
+            if not abbreviations_page:
+                break
+
+            # Append abbreviations to list
+            abbreviations.extend(abbreviations_page)
+
+            if len(abbreviations_page) < page_size:
+                break
+            
+            page_number += 1
+
+        return abbreviations
+
+    def get_clients(self) -> List[Dict]:
+        """
+        Retrieve a list of clients.
+
+        Returns:
+        - List[Dict]: A list of clients.
+        """
+        clients = []
+        endpoint = 'clientSearch'
+        page_size = 100
+        page_number = 1
+
+        while True:
+            payload = {
+                "OrderBy": "Id",
+                "SortOrderAscending": False,
+                "PageSize": page_size,
+                "PageNumber": page_number,
+                "Criteria": [
+                    {
+                        "FieldName": "ClientStatus",
+                        "Operator": "=",
+                        "Value": "Active"
+                    }
+                ]
+            }
+
+            response_data = self._request('POST', endpoint, headers=self.headers, json=payload)
+
+            clients_page = response_data.get("Clients", [])
+            if not clients_page:
+                break
+
+            # Append clients to list
+            clients.extend(clients_page)
+
+            if len(clients_page) < page_size:
+                break
+            
+            page_number += 1
+
+        return clients
+
     
