@@ -4,17 +4,13 @@
 
 [project]
 name = "timesolv_api"
-version = "0.0.1"
-authors = [
-  { name="Alexandra Hernandez", email="alexavndrarh@gmail.com" },
-]
-description = "A small example package for testing purposes."
+version = "1.0.0"
+authors = [{name="Alexandra Hernandez", email="alexavndrarh@gmail.com"}]
+description = "Package to be utilized for interacting with the TimeSolv API."
 readme = "README.md"
 requires-python = ">=3.9"
-classifiers = [
-    "Programming Language :: Python :: 3",
-    "Operating System :: OS Independent",
-]
+dependencies = ["requests>=2.25.1"]
+classifiers = ["Programming Language :: Python :: 3", "Operating System :: OS Independent"]
 license = "MIT"
 license-files = ["LICEN[CS]E*"]
 
