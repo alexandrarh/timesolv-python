@@ -54,7 +54,7 @@ class TimeSolvAPI:
         json = kwargs['json'] if 'json' in kwargs else None
         
         try:
-            response = requests.request(method, full_url, headers=headers, json=json, data=data)       # Add timeout parameter if needed; also unsure of kwargs
+            response = requests.request(method, full_url, headers=headers, json=json, data=data)       
             response.raise_for_status()
             return response.json()
         except requests.HTTPError as e:
