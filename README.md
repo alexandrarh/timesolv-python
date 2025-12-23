@@ -1,5 +1,5 @@
 # TimeSolv Python API
-Package that allows for Python-friendly usage of TimeSolv's API. Made for primary usage of timekeeping and employee tracking within the TimeSolv system.
+Package that allows for Python-friendly usage of <a href="https://apps.timesolv.com/Services/rest/oauth2v1/">TimeSolv's REST API</a>. Made for primary usage of timekeeping and employee tracking within the TimeSolv system.
 
 ## Prerequisites
 Below are the necessary components that need to be provided by the user when using the package. 
